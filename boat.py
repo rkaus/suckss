@@ -1,4 +1,6 @@
 from Adafruit_MotorHAT import Adafruit_MotorHAT, Adafruit_DCMotor
+#import rospy
+#from std_msgs.msg import String
 import time
 
 
@@ -7,6 +9,7 @@ class Boat():
         mot = Adafruit_MotorHAT(addr=0x60)
         self.Lmotor = mot.getMotor(1)
         self.Rmotor = mot.getMotor(4)
+        self.status = None
 
     def forward(self, speed):
         self.stop()
@@ -17,9 +20,10 @@ class Boat():
         for i in range(0,speed,1):
             self.Lmotor.setSpeed(i)
         for i in range(0, speed, 1):
-            self.Rmotor.setSpeed(i)
+            self.Rmotor.setSpeed(i+5)
         self.LmotorSpeed = speed
         self.RmotorSpeed = speed
+        self.status = 'forward'
 
 
     def backwards(self, speed):
@@ -30,9 +34,10 @@ class Boat():
         for i in range(0,speed,1):
             self.Lmotor.setSpeed(i)
         for i in range(0, speed, 1):
-            self.Rmotor.setSpeed(i)
+            self.Rmotor.setSpeed(i+5)
         self.LmotorSpeed = speed
         self.RmotorSpeed = speed
+        self.status = 'backwards'
 
     def right(self, speed, times):
         self.stop()
@@ -44,6 +49,7 @@ class Boat():
         for i in range(0,speed,1):
             self.Rmotor.setSpeed(i)
         time.sleep(times)
+        self.status = 'right'
         self.stop()
 
     def left(self, speed, times):
@@ -56,11 +62,14 @@ class Boat():
         for i in range(0,speed,1):
             self.Rmotor.setSpeed(i)
         time.sleep(times)
+        self.status = 'left'
         self.stop()
+
     
     def stop(self):
         self.Lmotor.run(Adafruit_MotorHAT.RELEASE)  
         self.Rmotor.run(Adafruit_MotorHAT.RELEASE)  
+        self.status = 'stopped'
 
 
     def circle(self, side):
@@ -106,6 +115,16 @@ def control(Boat):
         
     Boat.stop()
 
-SucksS = Boat()
-control(SucksS)
+def talker():
+     pub = rospy.Publisher('chatter', String, queue_size=10)
+     rospy.init_node('talker', anonymous=True)
+     rate = rospy.Rate(10) # 10hz
+     while not rospy.is_shutdown():
+         hello_str = "hello world %s" % rospy.get_time()
+         rospy.loginfo(hello_str)
+         pub.publish(hello_str)
+         rate.sleep()
+#SucksS = Boat()
+#control(SucksS)
 #main()
+#talker()
