@@ -12,6 +12,8 @@ while not wiimote:
 print ("Connection established!")
 wiimote.rpt_mode = cwiid.RPT_ACC
 #wiimote.rpt_mode = cwiid.RPT_IR
+wiimote.enable(cwiid.FLAG_MOTIONPLUS)
+
 
 try:
 
@@ -41,7 +43,7 @@ try:
              print ("if", t)
              #sucksS.backwards(100)
              sucksS.stop()
- 	     time.sleep(.1)
+ 	     time.sleep(.5)
              #sucksS.left(100, 1)
              sucksS.forward(200)
              #time.sleep(1)
@@ -68,6 +70,7 @@ try:
          plt.scatter(vx, vy, marker ='o')
          accelList.append((ax_n,ay_n))
          velocityList.append((vx,vy))
+         print state
   #f = lambda x : (ax_n/dt)*x
   #vx_n, err = scipy.integrate.quad(f, t, t + dt)
   #f = lambda y : (ay_n/dt)*y
@@ -83,12 +86,19 @@ except KeyboardInterrupt:
     plt.savefig('tmp.png')
     wiimote.close()
     print("Wiimote closed")
-    with open('accellog.txt','w') as accellog:
+    c=0
+    with open('/home/pi/suckss/log/counter.txt','a+') as counterFile:
+        c = counterFile.readline().strip()
+    c= int(c)
+    c = c+1 
+    with open('/home/pi/suckss/log/accellog' + str(c) + '.txt','w') as accellog:
         for item in accelList:
             accellog.write("X:%f  Y:%f \n" % (item[0],item[1]))
-    with open('vellog.txt','w') as vellog:
+    with open('/home/pi/suckss/log/vellog' + str(c) + '.txt','w') as vellog:
         for item in velocityList:
             vellog.write("X:%f  Y:%f \n" % (item[0],item[1]))
         
-        
+    
+    with open('/home/pi/suckss/log/counter.txt','w') as counterFile:
+        counterFile.write(str(c))     
         

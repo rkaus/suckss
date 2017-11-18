@@ -89,7 +89,7 @@ def control(Boat):
     input = raw_input('Control:')
     while(input != 'q'):
         if(input.isdigit()):
-            if int(input) >= 0 and int(input) < 5:
+            if int(input) >= 0 and int(input) <= 5:
                 speed = int(input)*40
                 input = raw_input('Control:')
         if input == 'w':
@@ -124,7 +124,8 @@ def talker():
          rospy.loginfo(hello_str)
          pub.publish(hello_str)
          rate.sleep()
-#SucksS = Boat()
-#control(SucksS)
+if __name__ == "__main__":
+	SucksS = Boat()
+	control(SucksS)
 #main()
 #talker()
