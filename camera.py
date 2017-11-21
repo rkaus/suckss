@@ -8,6 +8,26 @@ matplotlib.use('Agg')
 import matplotlib.image as mpimg
 import matplotlib.pyplot as plt
 from scipy import misc  # For saving images as needed
+import math
+def rgb2hsv(r, g, b):
+    r, g, b = r/255.0, g/255.0, b/255.0
+    mx = max(r, g, b)
+    mn = min(r, g, b)
+    df = mx-mn
+    if mx == mn:
+        h = 0
+    elif mx == r:
+        h = (60 * ((g-b)/df) + 360) % 360
+    elif mx == g:
+        h = (60 * ((b-r)/df) + 120) % 360
+    elif mx == b:
+        h = (60 * ((r-g)/df) + 240) % 360
+    if mx == 0:
+        s = 0
+    else:
+        s = df/mx
+    v = mx
+    return h, s, v
 # Define a function to perform a perspective transform
 # I've used the example grid image above to choose source points for the
 # grid cell in front of the rover (each grid cell is 1 square meter in the sim)
@@ -19,14 +39,14 @@ def perspect_transform(img, src, dst):
     
     return warped
 # Identify pixels above the threshold
-# Threshold of RGB > 160 does a nice job of identifying ground pixels only
-def color_thresh(img, rgb_thresh=(160, 160, 160)):
+# Figure out thresh for water
+def color_thresh(img, rgb_thresh=(50, 100, 160)):
     # Create an array of zeros same xy size as img, but single channel
     color_select = np.zeros_like(img[:,:,0])
     # Require that each pixel be above all three threshold values in RGB
     # above_thresh will now contain a boolean array with "True"
     # where threshold was met
-    above_thresh = (img[:,:,0] > rgb_thresh[0]) \
+    above_thresh = (img[:,:,0] < rgb_thresh[0]) \
                 & (img[:,:,1] > rgb_thresh[1]) \
                 & (img[:,:,2] > rgb_thresh[2])
     # Index the array of zeros with the boolean array and set to 1
@@ -66,16 +86,30 @@ if __name__ == "__main__":
 	# grab the raw NumPy array representing the image, then initialize the timestamp
 	# and occupied/unoccupied text
 	image = frame.array
-        binary = color_thresh(image) 
+        binary = color_thresh(image)
+        x_pix, y_pix = rover_coords(binary)
+        dist, angles = to_polar_coords(x_pix, y_pix)
+        nav_angle = np.mean(angles)
+        print nav_angle
+        if math.isnan(nav_angle):
+              print "stop"
+        elif nav_angle < 0.4 and nav_angle > -0.4:
+              print "forward"
+        elif nav_angle > 0.4:
+              print "right"
+        elif nav_angle < -0.4:
+              print "left"
+        
 	# show the frame
         misc.imsave('img' + str(i) + '.png', image)
 	misc.imsave('img_b' + str(i) + '.png', binary)
         print i
-	key = cv2.waitKey(0) & 0xFF
+        time.sleep(1)
+	#key = cv2.waitKey(0)# & 0xFF
         i+= 1
 	# clear the stream in preparation for the next frame
 	rawCap.truncate(0)
  
 	# if the `q` key was pressed, break from the loop
-	if key == ord("q"):
-		break
+	#if key == ord("q"):
+		#break
