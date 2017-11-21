@@ -68,7 +68,8 @@ if __name__ == "__main__":
 	image = frame.array
         binary = color_thresh(image) 
 	# show the frame
-	misc.imsave('img' + str(i) + '.png', binary)
+        misc.imsave('img' + str(i) + '.png', image)
+	misc.imsave('img_b' + str(i) + '.png', binary)
         print i
 	key = cv2.waitKey(0) & 0xFF
         i+= 1
