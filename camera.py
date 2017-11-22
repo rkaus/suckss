@@ -40,7 +40,7 @@ def perspect_transform(img, src, dst):
     return warped
 # Identify pixels above the threshold
 # Figure out thresh for water
-def color_thresh(img, rgb_thresh=(50, 100, 160)):
+def color_thresh(img, rgb_thresh=(60, 90, 160)):
     # Create an array of zeros same xy size as img, but single channel
     color_select = np.zeros_like(img[:,:,0])
     # Require that each pixel be above all three threshold values in RGB
@@ -88,16 +88,17 @@ if __name__ == "__main__":
 	image = frame.array
         binary = color_thresh(image)
         x_pix, y_pix = rover_coords(binary)
+        print len(x_pix)
         dist, angles = to_polar_coords(x_pix, y_pix)
-        nav_angle = np.mean(angles)
+        nav_angle = np.clip(np.mean(angles*180/np.pi), -15, 15)
         print nav_angle
         if math.isnan(nav_angle):
               print "stop"
-        elif nav_angle < 0.4 and nav_angle > -0.4:
+        elif nav_angle < 10 and nav_angle > -10:
               print "forward"
-        elif nav_angle > 0.4:
+        elif nav_angle > 10:
               print "right"
-        elif nav_angle < -0.4:
+        elif nav_angle < -10:
               print "left"
         
 	# show the frame
