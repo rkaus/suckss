@@ -88,6 +88,7 @@ if __name__ == "__main__":
 	image = frame.array
         binary = color_thresh(image)
         x_pix, y_pix = rover_coords(binary)
+        binary = binary * 255
         print len(x_pix)
         dist, angles = to_polar_coords(x_pix, y_pix)
         nav_angle = np.clip(np.mean(angles*180/np.pi), -15, 15)
