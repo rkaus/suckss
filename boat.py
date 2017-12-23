@@ -2,44 +2,51 @@ from Adafruit_MotorHAT import Adafruit_MotorHAT, Adafruit_DCMotor
 #import rospy
 #from std_msgs.msg import String
 import time
-
+import RPi.GPIO as GPIO
 
 class Boat():
     def __init__(self):#, Lmotor, Rmotor):
         mot = Adafruit_MotorHAT(addr=0x60)
+        self.Mmotor = mot.getMotor(3)
         self.Lmotor = mot.getMotor(1)
         self.Rmotor = mot.getMotor(4)
         self.status = None
-
-    def forward(self, speed):
+    def cleanup(self):
+        GPIO.cleanup()
+    def forward(self, speed=150):
         self.stop()
         time.sleep(0.01)
         self.Lmotor.run(Adafruit_MotorHAT.FORWARD)
         self.Rmotor.run(Adafruit_MotorHAT.FORWARD)
-
+        self.Mmotor.run(Adafruit_MotorHAT.FORWARD)
         for i in range(0,speed,1):
             self.Lmotor.setSpeed(i)
+            self.Mmotor.setSpeed(i)
         for i in range(0, speed, 1):
             self.Rmotor.setSpeed(i+5)
         self.LmotorSpeed = speed
         self.RmotorSpeed = speed
+        self.MmotorSpeed = speed
         self.status = 'forward'
 
 
-    def backwards(self, speed):
+    def backwards(self, speed=150):
         self.stop()
         time.sleep(0.01)
         self.Lmotor.run(Adafruit_MotorHAT.BACKWARD)
         self.Rmotor.run(Adafruit_MotorHAT.BACKWARD)
+        self.Mmotor.run(Adafruit_MotorHAT.BACKWARD)
         for i in range(0,speed,1):
             self.Lmotor.setSpeed(i)
+            self.Mmotor.setSpeed(i)
         for i in range(0, speed, 1):
             self.Rmotor.setSpeed(i+5)
         self.LmotorSpeed = speed
         self.RmotorSpeed = speed
+        self.MmotorSpeed = speed
         self.status = 'backwards'
 
-    def right(self, speed, times):
+    def right(self, speed=100, times=0.1):
         self.stop()
         time.sleep(0.01)
         self.Lmotor.run(Adafruit_MotorHAT.FORWARD)
@@ -50,9 +57,9 @@ class Boat():
             self.Rmotor.setSpeed(i)
         time.sleep(times)
         self.status = 'right'
-        self.stop()
+        #self.stop()
 
-    def left(self, speed, times):
+    def left(self, speed=100, times=0.1):
         self.stop()
         time.sleep(0.01)
         self.Rmotor.run(Adafruit_MotorHAT.FORWARD)
@@ -63,12 +70,13 @@ class Boat():
             self.Rmotor.setSpeed(i)
         time.sleep(times)
         self.status = 'left'
-        self.stop()
+        #self.stop()
 
     
     def stop(self):
         self.Lmotor.run(Adafruit_MotorHAT.RELEASE)  
-        self.Rmotor.run(Adafruit_MotorHAT.RELEASE)  
+        self.Rmotor.run(Adafruit_MotorHAT.RELEASE) 
+        self.Mmotor.run(Adafruit_MotorHAT.RELEASE) 
         self.status = 'stopped'
 
 

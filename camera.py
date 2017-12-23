@@ -1,7 +1,7 @@
 from picamera.array import PiRGBArray
 from picamera import PiCamera
 import time
-import cv2 # OpenCV for perspective transform
+#import cv2 # OpenCV for perspective transform
 import numpy as np
 import matplotlib
 matplotlib.use('Agg')
@@ -103,8 +103,8 @@ if __name__ == "__main__":
               print "left"
         
 	# show the frame
-        misc.imsave('img' + str(i) + '.png', image)
-	misc.imsave('img_b' + str(i) + '.png', binary)
+        misc.imsave('/home/pi/suckss/images/img' + str(i) + '.png', image)
+	misc.imsave('/home/pi/suckss/images/img_b' + str(i) + '.png', binary)
         print i
         time.sleep(1)
 	#key = cv2.waitKey(0)# & 0xFF
