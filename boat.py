@@ -13,12 +13,12 @@ class Boat():
         self.status = None
     def cleanup(self):
         GPIO.cleanup()
-    def forward(self, speed=150):
+    def forward(self, speed=200):
         self.stop()
         time.sleep(0.01)
         self.Lmotor.run(Adafruit_MotorHAT.FORWARD)
         self.Rmotor.run(Adafruit_MotorHAT.FORWARD)
-        self.Mmotor.run(Adafruit_MotorHAT.FORWARD)
+        self.Mmotor.run(Adafruit_MotorHAT.BACKWARD)
         for i in range(0,speed,1):
             self.Lmotor.setSpeed(i)
             self.Mmotor.setSpeed(i)
@@ -30,12 +30,12 @@ class Boat():
         self.status = 'forward'
 
 
-    def backwards(self, speed=150):
+    def backwards(self, speed=200):
         self.stop()
         time.sleep(0.01)
         self.Lmotor.run(Adafruit_MotorHAT.BACKWARD)
         self.Rmotor.run(Adafruit_MotorHAT.BACKWARD)
-        self.Mmotor.run(Adafruit_MotorHAT.BACKWARD)
+        self.Mmotor.run(Adafruit_MotorHAT.FORWARD)
         for i in range(0,speed,1):
             self.Lmotor.setSpeed(i)
             self.Mmotor.setSpeed(i)
@@ -46,7 +46,7 @@ class Boat():
         self.MmotorSpeed = speed
         self.status = 'backwards'
 
-    def right(self, speed=100, times=0.1):
+    def right(self, speed=150, times=0.1):
         self.stop()
         time.sleep(0.01)
         self.Lmotor.run(Adafruit_MotorHAT.FORWARD)
@@ -59,7 +59,7 @@ class Boat():
         self.status = 'right'
         #self.stop()
 
-    def left(self, speed=100, times=0.1):
+    def left(self, speed=150, times=0.1):
         self.stop()
         time.sleep(0.01)
         self.Rmotor.run(Adafruit_MotorHAT.FORWARD)
