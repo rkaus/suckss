@@ -7,7 +7,7 @@ import time
 import RPi.GPIO as GPIO
 
 class Boat():
-    def __init__(self, publish = True):#, Lmotor, Rmotor):
+    def __init__(self):#, Lmotor, Rmotor):
         mot = Adafruit_MotorHAT(addr=0x60)
         self.Mmotor = mot.getMotor(3)
         self.Lmotor = mot.getMotor(1)
@@ -15,13 +15,13 @@ class Boat():
         self.Cmotor = mot.getMotor(2)
 	self.cStatus = False
 	self.status = None
-	if publish:
-            sensorPub()
+	
 	    
     def cleanup(self):
         GPIO.cleanup()
     def forward(self, speed=200):
         self.stop()
+        print ("Forward")
         time.sleep(0.01)
         self.Lmotor.run(Adafruit_MotorHAT.BACKWARD)
         self.Rmotor.run(Adafruit_MotorHAT.BACKWARD)
@@ -152,7 +152,7 @@ def control(Boat):
     Boat.stop()
 
 def ros_control(Boat):
-    rospy.init_node('control_listener', anonymous=True)
+    #rospy.init_node('control_listener', anonymous=True)
  
     rospy.Subscriber("control", String, Boat.callback)
  

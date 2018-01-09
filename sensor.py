@@ -13,7 +13,7 @@ def sensor_setup():
     GPIO.setup(ECHO,GPIO.IN)                   #Set pin as GPIO in
     GPIO.setup(TRIG2,GPIO.OUT)                  #Set pin as GPIO out
     GPIO.setup(ECHO2,GPIO.IN)                   #Set pin as GPIO in
-
+    
 
 #try:
 # while True:
@@ -34,7 +34,7 @@ def sensor_measure():
     while GPIO.input(ECHO)==0:               #Check whether the ECHO is LOW
       pulse_start = time.time()              #Saves the last known time of LOW pulse
       #print "pulse_start is {}".format(pulse_start)  
-  
+    pulse_end = time.time()
     while GPIO.input(ECHO)==1:               #Check whether the ECHO is HIGH
       pulse_end = time.time()                #Saves the last known time of HIGH pulse 
       #print "pulse_end is {}".format(pulse_end)  
@@ -45,7 +45,7 @@ def sensor_measure():
 
     while GPIO.input(ECHO2)==0:               #Check whether the ECHO is HIGH
       pulse_start2 = time.time()              #Saves the last known time of LOW pulse
-
+    pulse_end2 = time.time()
     while GPIO.input(ECHO2)==1:               #Check whether the ECHO is HIGH
       pulse_end2 = time.time()                #Saves the last known time of HIGH pulse 
 
@@ -76,13 +76,11 @@ class sensorPub:
         self.sensor_pub_L = rospy.Publisher('Left_sensor', Float32, queue_size=10)
         self.sensor_pub_R = rospy.Publisher('Right_sensor',Float32, queue_size=10)
         sensor_setup()
-        try:
-            while not rospy.is_shutdown():
-                sen1, sen2 = sensor_measure()
-                self.sensor_pub_L.publish(sen1)
-                self.sensor_pub_R.publish(sen2)
-                time.sleep(1)
-        except KeyboardInterrupt:
-            sensor_cleanup()
+        while not rospy.is_shutdown():
+            sen1, sen2 = sensor_measure()
+            self.sensor_pub_L.publish(sen1)
+            self.sensor_pub_R.publish(sen2)
+            time.sleep(1)
+        sensor_cleanup()
 if __name__ == '__main__':
     senPub = sensorPub()  
