@@ -16,6 +16,9 @@ def callback(data):
            boatsky.stop()
      if data.data == 'Done':
            boatsky.cleanup()     
+     if data.data == 'Conveyor':
+           boatsky.conveyor()     
+
 def listener():
  
      # In ROS, nodes are uniquely named. If two nodes with the same

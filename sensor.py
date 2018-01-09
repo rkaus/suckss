@@ -1,6 +1,8 @@
-import RPi.GPIO as GPIO                    #Import GPIO library
+import RPi.GPIO as GPIO      #Import GPIO library
 import time                                #Import time library
-def setup():
+import rospy
+from std_msgs.msg import Float32
+def sensor_setup():
     GPIO.setmode(GPIO.BCM)                     #Set GPIO pin numbering 
     TRIG = 21                                  #Associate pin 23 to TRIG
     ECHO = 5                                  #Associate pin 24 to ECHO
@@ -15,7 +17,7 @@ def setup():
 
 #try:
 # while True:
-def measure():
+def sensor_measure():
     TRIG = 21
     ECHO = 5
     TRIG2 = 19
@@ -29,13 +31,13 @@ def measure():
     time.sleep(0.00001)                      #Delay of 0.00001 seconds
     GPIO.output(TRIG, False)                 #Set TRIG as LOW
     
-    #while GPIO.input(ECHO)==0:               #Check whether the ECHO is LOW
-    #  pulse_start = time.time()              #Saves the last known time of LOW pulse
-    #  print "pulse_start is {}".format(pulse_start)  
+    while GPIO.input(ECHO)==0:               #Check whether the ECHO is LOW
+      pulse_start = time.time()              #Saves the last known time of LOW pulse
+      #print "pulse_start is {}".format(pulse_start)  
   
-    #while GPIO.input(ECHO)==1:               #Check whether the ECHO is HIGH
-    #  pulse_end = time.time()                #Saves the last known time of HIGH pulse 
-    #  print "pulse_end is {}".format(pulse_end)  
+    while GPIO.input(ECHO)==1:               #Check whether the ECHO is HIGH
+      pulse_end = time.time()                #Saves the last known time of HIGH pulse 
+      #print "pulse_end is {}".format(pulse_end)  
 
     GPIO.output(TRIG2, True)                  #Set TRIG as HIGH
     time.sleep(0.00001)                      #Delay of 0.00001 seconds
@@ -65,6 +67,22 @@ def measure():
       print "Distance2:",distance2,"cm"  #Print distance with 0.5 cm calibration
     else:
       print "Sensor2 Out Of Range"                   #display out of range
-    return  distance2
-def cleanup():
+    return  distance, distance2
+def sensor_cleanup():
     GPIO.cleanup()
+class sensorPub:
+    def __init__(self):
+        rospy.init_node('sensors')
+        self.sensor_pub_L = rospy.Publisher('Left_sensor', Float32, queue_size=10)
+        self.sensor_pub_R = rospy.Publisher('Right_sensor',Float32, queue_size=10)
+        sensor_setup()
+        try:
+            while not rospy.is_shutdown():
+                sen1, sen2 = sensor_measure()
+                self.sensor_pub_L.publish(sen1)
+                self.sensor_pub_R.publish(sen2)
+                time.sleep(1)
+        except KeyboardInterrupt:
+            sensor_cleanup()
+if __name__ == '__main__':
+    senPub = sensorPub()  

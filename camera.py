@@ -1,12 +1,13 @@
 from picamera.array import PiRGBArray
 from picamera import PiCamera
+from sensor_msgs.msg import Image
 import time
 #import cv2 # OpenCV for perspective transform
 import numpy as np
-import matplotlib
-matplotlib.use('Agg')
-import matplotlib.image as mpimg
-import matplotlib.pyplot as plt
+#import matplotlib
+#matplotlib.use('Agg')
+#import matplotlib.image as mpimg
+#import matplotlib.pyplot as plt
 from scipy import misc  # For saving images as needed
 import math
 def rgb2hsv(r, g, b):
@@ -71,6 +72,8 @@ def to_polar_coords(x_pixel, y_pixel):
     # Calculate angle away from vertical for each pixel
     angles = np.arctan2(y_pixel, x_pixel)
     return dist, angles
+def ros_publish_image():
+    
 
 if __name__ == "__main__":
     # Get camera image
@@ -78,39 +81,40 @@ if __name__ == "__main__":
     camera.resolution = (640, 480)
     rawCap = PiRGBArray(camera, size=(640, 480))
     time.sleep(0.1)
-    #img = camera.capture('img.jpg')
-    # dist, angle = to_polar_coords(rover_coords(color_thresh(image)))
+    img = camera.capture('img.jpg')
+    #binary  = color_thresh(img)
     # nav_angle = np.mean(angle)
-    i = 0
-    for frame in camera.capture_continuous(rawCap, format="bgr", use_video_port=True):
+    #i = 0
+    #print "start"
+    #for frame in camera.capture_continuous(rawCap, format="bgr", use_video_port=True):
 	# grab the raw NumPy array representing the image, then initialize the timestamp
 	# and occupied/unoccupied text
-	image = frame.array
-        binary = color_thresh(image)
-        x_pix, y_pix = rover_coords(binary)
-        binary = binary * 255
-        print len(x_pix)
-        dist, angles = to_polar_coords(x_pix, y_pix)
-        nav_angle = np.clip(np.mean(angles*180/np.pi), -15, 15)
-        print nav_angle
-        if math.isnan(nav_angle):
-              print "stop"
-        elif nav_angle < 10 and nav_angle > -10:
-              print "forward"
-        elif nav_angle > 10:
-              print "right"
-        elif nav_angle < -10:
-              print "left"
+	#image = frame.array
+        #binary = color_thresh(image)
+        #x_pix, y_pix = rover_coords(binary)
+        #binary = binary * 255
+        #print len(x_pix)
+        #dist, angles = to_polar_coords(x_pix, y_pix)
+        #nav_angle = np.clip(np.mean(angles*180/np.pi), -15, 15)
+        #print nav_angle
+        #if math.isnan(nav_angle):
+              #print "stop"
+        #elif nav_angle < 10 and nav_angle > -10:
+             # print "forward"
+        #elif nav_angle > 10:
+              #print "right"
+        #elif nav_angle < -10:
+              #print "left"
         
 	# show the frame
-        misc.imsave('/home/pi/suckss/images/img' + str(i) + '.png', image)
-	misc.imsave('/home/pi/suckss/images/img_b' + str(i) + '.png', binary)
-        print i
-        time.sleep(1)
+        #misc.imsave('/home/pi/suckss/images/img' + str(i) + '.png', image)
+	#misc.imsave('/home/pi/suckss/images/img_b' + str(i) + '.png', binary)
+        #print i
+        #time.sleep(1)
 	#key = cv2.waitKey(0)# & 0xFF
-        i+= 1
+        #i+= 1
 	# clear the stream in preparation for the next frame
-	rawCap.truncate(0)
+	#rawCap.truncate(0)
  
 	# if the `q` key was pressed, break from the loop
 	#if key == ord("q"):

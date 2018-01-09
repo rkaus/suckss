@@ -8,8 +8,8 @@ def talker(msg, pub):
          rospy.loginfo(msg)
          pub.publish(msg)
          rate.sleep()
-rospy.init_node('talker', anonymous=True)
-pub = rospy.Publisher('chatter', String, queue_size=10)
+rospy.init_node('wmcontrol', anonymous=True)
+pub = rospy.Publisher('control', String, queue_size=10)
 
 button_delay = 0.1
 
@@ -67,6 +67,7 @@ while True:
     time.sleep(button_delay)
 
   if (buttons & cwiid.BTN_1):
+    pub.publish('Conveyor')
     print 'Button 1 pressed'
     time.sleep(button_delay)
 
